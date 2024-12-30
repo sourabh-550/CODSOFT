@@ -1,2 +1,2 @@
 # CODSOFT
-internship task for codsoft
+Internship tasks and project for codsoft
