@@ -1,87 +1,77 @@
-#importing tkinter module as tk
+#importing required module 
 import tkinter as tk
 
-#defining function to perform the calculations
-def Calculation():
-    #using error handling to handel errors
+#function to handle button(add text in curent which is entered in the entry box)
+def button1(number):
+    current=entry_box.get()#it gets the current text entered in entry box
+    entry_box.delete(0,tk.END)#it clears the entry box to prevent error
+    entry_box.insert(0,current+str(number)) #it insert a new number
+
+#function to clear the entry box
+def clear_box():
+    entry_box.delete(0,tk.END)#clear entry box
+
+
+def calculate_result():#function to calculate result
     try:
-        #used to get the value entered by the user to from the entry widget
-        num1=e_num1.get()
-        num2=e_num2.get()
-        
-        #if entries are null raise error
-        if not num1 or not num2:
-            result_lable.config(text="Error: please enter both numbers")
-            return
-        
-        num1=float(num1)
-        num2=float(num2)
-        operation=operation_var.get()
+        result=eval(entry_box.get())
+        entry_box.delete(0,tk.END)
+        entry_box.insert(0,result)#insert result in entry box
+    except Exception as e:
+        entry_box.delete(0,tk.END)#clear entry box if there is an error
+        entry_box.insert(0,"Error")
 
-        if operation == 'add':
-            result = num1 + num2
-        elif operation == 'subtract':
-            result = num1 - num2
-        elif operation == 'multiply':
-            result = num1 * num2
-        elif operation == 'divide':
-            if num2 != 0:
-             result = num1 / num2  
-            else :
-               result_lable.config(text="Error: Can't divide by zero") #if num2 is zero raise error
-               return
-        else:
-            result = "Invalid operation"
-        result_lable.config(text=f"Result: {result:.2f}")#printing the result
-    except ValueError:
-        result_lable.config(text="Please enter a valid number:")
-
-'''
-Making the main window for the programme and giving the title
-setting the maximum and minimum size for the application'''
-
-root =tk.Tk()
-root.title("Calculator")
-root.wm_minsize(width=400,height=400)
-root.wm_maxsize(width=600,height=600)
-
-#creating lables and entry box for to enter the no given by the user
-l_num1=tk.Label(root,text="Enter first number:",)
-l_num1.pack(pady=5)
-
-e_num1=tk.Entry(root)
-e_num1.pack(pady=5)
-
-l_num2=tk.Label(root,text="Enter second number:")
-l_num2.pack(pady=5)
-
-e_num2=tk.Entry(root)
-e_num2.pack(pady=5)
-
-# setting default operation value to be add
-operation_var=tk.StringVar(value='add')
-
-#creating checkboxes to select the operation to be performed
-box_add=tk.Radiobutton(root,text="ADD",variable=operation_var,value="add")
-box_add.pack(pady=5)
-
-box_subtract=tk.Radiobutton(root,text="SUBTRACT",variable=operation_var,value="subtract")
-box_subtract.pack(pady=5)
-
-box_multiply=tk.Radiobutton(root,text="MULTIPLY",variable=operation_var,value="multiply")
-box_multiply.pack(pady=5)
-
-box_divide=tk.Radiobutton(root,text="DIVIDE",variable=operation_var,value="divide")
-box_divide.pack(pady=5)
-
-#creating a calculate button which send the operation to the function and function perform the operation
-cal_button=tk.Button(root,text="CALCULATE",command=Calculation)
-cal_button.pack(pady=5)
-
-#making a result lable to display the result
-result_lable=tk.Label(root,text="RESULT: ",)
-result_lable.pack(pady=10)
+def handle_button(value):
+    button1(value)
 
 
-#it keeps the application open until the application is closed
+#first creating a main window for the application 
+root=tk.Tk()
+root.title("CALCULATOR")
+root.wm_maxsize(width=600,height=500)
+
+#creating entryy widget to see result and numbers
+entry_box=tk.Entry(root,width=20,font=('Arial',16),borderwidth=5)
+entry_box.grid(row=0,column=0,columnspan=4,pady=10)
+
+
+'''We created a list of button because if we manually assign 
+the numbers to each grid it is time consuming and make our code
+more lengthy 
+To resove this issue we will assign numbers to its correct
+grid using loop'''
+
+buttons=[
+    ("7",1,0), ("8",1,1), ("9",1,2), ("+",1,3),
+    ("4",2,0), ("5",2,1), ("6",2,2), ("-",2,3),
+    ("1",3,0), ("2",3,1), ("3",3,2), ("*",3,3),
+    ("0",4,0), ("C",4,1), ("=",4,2), ("/",4,3),
+]
+
+button_object=[]#created a list to store button object
+
+#created a loop to assign the button to its proper grid position
+for num,Row,Col in buttons:
+    calc_button=tk.Button(root,text=num,width=4,height=2)
+    calc_button.grid(row=Row,column=Col,pady=6)
+    button_object.append((calc_button,num))#adding the button and its lable to button_object
+
+
+
+#setting commands for the buttons
+for button,text in button_object:
+    if text=="C":
+        button.config(command=clear_box)
+    elif text=="=":
+        button.config(command=calculate_result)
+    else:
+        button.config(command=lambda value=text: handle_button(value))#it passes the correct number/operation to button1 function
+
+'''here i use lambda because it create a anonymous function(a function without name)
+.Button generally dont accept the arguments but using lambda function we can
+pass arguments to the function.
+It assign the button value to value varible and then send it to handel_button'''
+
+
+#keeps the main window on
 root.mainloop()
